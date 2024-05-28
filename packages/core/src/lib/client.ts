@@ -315,10 +315,10 @@ export class Mizu {
   /**
    * Claim Transfer
    *
-   * @param args.transferId Transfer ID
+   * @param args.transferParam Transfer Param
    * @returns
    */
-  async claimTransfer(args: { transferId: string }) {
+  async claimTransfer(args: { transferParam: string }) {
     this.checkInitialized();
     this.checkJWTToken();
 
@@ -326,7 +326,7 @@ export class Mizu {
       url: this.graphqlEndPoint,
       document: claimTransferQuery,
       variables: {
-        transferId: args.transferId,
+        transferParam: args.transferParam,
       },
       requestHeaders: {
         Authorization: `Bearer ${this.jwtToken}`,

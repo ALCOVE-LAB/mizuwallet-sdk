@@ -82,8 +82,8 @@ export const fetchTransferQuery = gql`
  * For claim transfer
  */
 export const claimTransferQuery = gql`
-  mutation claimTransferQuery($transferId: String = "") {
-    claimTransfer(transferId: $transferId)
+  mutation claimTransferQuery($transferParam: String = "") {
+    claimTransfer(transferParam: $transferParam)
   }
 `;
 
