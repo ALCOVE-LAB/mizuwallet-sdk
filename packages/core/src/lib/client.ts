@@ -1,10 +1,11 @@
 import { Network } from '@aptos-labs/ts-sdk';
 import request from 'graphql-request';
-import { jwtDecode } from 'jwt-decode';
+import { decodeJWT } from '../helpers/JWTHelper';
 import {
   CheckUserIsExistQueryByTgId,
   LoginMutation,
   UserWalletAddressQuery,
+  bindGoogleQuery,
   claimTransferQuery,
   confirmOrderQuery,
   createOrderQuery,
@@ -28,6 +29,8 @@ interface PaginationSettings {
   limit?: number;
   offset?: number;
 }
+
+const KEYLESS_GOOGLE_SITE_URL = 'https://dev.fuzzwallet.com:7654/keyless_google';
 
 /**
  * MizuWallet SDK Core Client
@@ -111,23 +114,12 @@ export class Mizu {
       },
     });
 
-    /**
-     * Decode JWT Token
-     */
-    const decoded: any = jwtDecode(result.tgLogin);
-
-    // Check if token is expired
-    if (decoded?.exp < Date.now() / 1000) {
+    try {
+      const [userId, jwt]: any = decodeJWT(result.tgLogin);
+      this.userId = userId;
+      this.jwtToken = jwt;
+    } catch {
       this.logout();
-      throw new Error('Token expired');
-    }
-
-    // Check if token has user id
-    // If yes, set userId and jwtToken
-    if (decoded?.['https://hasura.io/jwt/claims']?.['x-hasura-user-id']) {
-      this.userId = decoded['https://hasura.io/jwt/claims']['x-hasura-user-id'];
-      this.jwtToken = result.tgLogin;
-      //   console.log(this.userId, this.jwtToken);
     }
   }
 
@@ -212,6 +204,47 @@ export class Mizu {
     });
 
     return result?.createOrder;
+  }
+
+  /**
+   *
+   * @param args.redirect_uri
+   */
+  async startBindGoogle(args: { redirect_uri: string }) {
+    this.checkInitialized();
+    this.checkJWTToken();
+
+    const urlSearchParams = new URLSearchParams({
+      token: this.jwtToken,
+      appId: this.appId,
+      ...args,
+    });
+
+    window.open(`${KEYLESS_GOOGLE_SITE_URL}?${urlSearchParams.toString()}`, '_blank');
+  }
+
+  /**
+   *
+   * @param args.address keyless address
+   * @param args.idToken google jwt
+   * @returns
+   */
+  async bindGoogleAccount(args: { address: string; idToken: string }) {
+    this.checkInitialized();
+    this.checkJWTToken();
+
+    const result: any = await request({
+      url: this.graphqlEndPoint,
+      document: bindGoogleQuery,
+      variables: {
+        ...args,
+      },
+      requestHeaders: {
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
+    });
+
+    return result;
   }
 
   /**

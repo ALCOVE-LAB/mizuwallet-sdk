@@ -3,7 +3,7 @@
 ## Installation
 
 ```base
-$ pnpm add graphql-request buffer @aptos-labs/ts-sdk @mizuwallet-sdk/core
+$ pnpm add @mizuwallet-sdk/core
 ```
 
 ## Usage

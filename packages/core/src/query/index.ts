@@ -143,3 +143,9 @@ export const fetchOrderListQuery = gql`
   }
 `;
 
+export const bindGoogleQuery = gql`
+  mutation bindGoogleQuery($address: String = "", $idToken: String = "") {
+    googleBind(address: $address, idToken: $idToken)
+  }
+`;
+
