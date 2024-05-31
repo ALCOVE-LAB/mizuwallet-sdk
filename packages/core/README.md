@@ -29,6 +29,12 @@ Login In **Telegram** [[Docs of Telegram Mini App](https://core.telegram.org/bot
 await MizuClient.loginInTG(window.Telegram.WebApp.initData);
 ```
 
+Logout
+
+```ts
+await MizuClient.logout();
+```
+
 Fetch User's Address
 
 ```ts
@@ -61,5 +67,11 @@ Let the order confirmed by user, and the payload will be submitted to the chain.
 await MizuClient.confirmOrder({
   orderId: '1234-abcd-12312412',
 });
+```
+
+3. Check is user existed.
+
+```ts
+await MizuClient.isUserExistByTgID('123123');
 ```
 
