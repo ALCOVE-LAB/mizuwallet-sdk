@@ -299,10 +299,11 @@ export class Mizu {
    *
    * @param args.amount Transfer amount integer
    * @param args.expirationAt expiration time
+   * @param args.symbol Transfer Token symbol
    *
    * @returns
    */
-  async createTransfer(args: { amount: number }) {
+  async createTransfer(args: { amount: number; symbol: string }) {
     this.checkInitialized();
     this.checkJWTToken();
 
@@ -312,6 +313,7 @@ export class Mizu {
       variables: {
         amount: Math.floor(args.amount),
         expirationAt: Math.floor(Date.now() / 1000) + SEC_IN_72_HOURS,
+        symbol: args.symbol,
       },
       requestHeaders: {
         Authorization: `Bearer ${this.jwtToken}`,
