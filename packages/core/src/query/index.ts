@@ -47,8 +47,8 @@ export const createOrderQuery = gql`
  * For creating order
  */
 export const createTransferQuery = gql`
-  mutation transferQuery($amount: Float = 0, $expirationAt: Float = 0) {
-    createTransfer(amount: $amount, expirationAt: $expirationAt)
+  mutation transferQuery($amount: Float = 0, $expirationAt: Float = 0, $symbol: String = "") {
+    createTransfer(amount: $amount, expirationAt: $expirationAt, symbol: $symbol)
   }
 `;
 
@@ -65,6 +65,7 @@ export const fetchTransferQuery = gql`
       totalCount
       expirationAt
       createdAt
+      symbol
       transfer_claimeds {
         walletUserId
         createdAt
