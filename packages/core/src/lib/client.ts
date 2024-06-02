@@ -8,13 +8,14 @@ import {
   bindGoogleQuery,
   claimTransferQuery,
   confirmOrderQuery,
+  createMultipleTransferQuery,
   createOrderQuery,
   createTransferQuery,
   fetchOrderListQuery,
   fetchTransferQuery,
   simulateOrderQuery,
 } from '../query';
-import { ORDER_STATUS } from './config/enum';
+import { ORDER_STATUS, TRANSFER_TYPE } from './config/enum';
 
 export const GRAPHQL_URL: Record<'mainnet' | 'testnet', string> = {
   testnet: 'https://hasura-wallet.groupwar.xyz/v1/graphql',
@@ -24,6 +25,7 @@ export const GRAPHQL_URL: Record<'mainnet' | 'testnet', string> = {
 export type JWTToken = string;
 
 const SEC_IN_72_HOURS = 3600 * 72;
+const SEC_IN_24_HOURS = 3600 * 24;
 
 interface PaginationSettings {
   limit?: number;
@@ -312,8 +314,41 @@ export class Mizu {
       document: createTransferQuery,
       variables: {
         amount: Math.floor(args.amount),
-        expirationAt: Math.floor(Date.now() / 1000) + SEC_IN_72_HOURS,
+        expirationAt: Math.floor(Date.now() / 1000) + SEC_IN_24_HOURS,
         symbol: args.symbol,
+        type: TRANSFER_TYPE.SINGLE,
+      },
+      requestHeaders: {
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
+    });
+
+    return result?.createTransfer;
+  }
+
+  /**
+   * Create Transfer
+   *
+   * @param args.amount Transfer amount integer
+   * @param args.expirationAt expiration time
+   * @param args.symbol Transfer Token symbol
+   * @param args.count Transfer count
+   *
+   * @returns
+   */
+  async createMultipleTransfer(args: { amount: number; symbol: string; count: string | number }) {
+    this.checkInitialized();
+    this.checkJWTToken();
+
+    const result: any = await request({
+      url: this.graphqlEndPoint,
+      document: createMultipleTransferQuery,
+      variables: {
+        amount: Math.floor(args.amount),
+        count: Math.floor(Number(args.count)),
+        expirationAt: Math.floor(Date.now() / 1000) + SEC_IN_24_HOURS,
+        symbol: args.symbol,
+        type: TRANSFER_TYPE.MULTIPLE,
       },
       requestHeaders: {
         Authorization: `Bearer ${this.jwtToken}`,
