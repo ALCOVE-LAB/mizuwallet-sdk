@@ -6,16 +6,12 @@ import {
   LoginMutation,
   UserWalletAddressQuery,
   bindGoogleQuery,
-  claimTransferQuery,
   confirmOrderQuery,
-  createMultipleTransferQuery,
   createOrderQuery,
-  createTransferQuery,
   fetchOrderListQuery,
-  fetchTransferQuery,
   simulateOrderQuery,
 } from '../query';
-import { ORDER_STATUS, TRANSFER_TYPE } from './config/enum';
+import { ORDER_STATUS } from './config/enum';
 
 export const GRAPHQL_URL: Record<'mainnet' | 'testnet', string> = {
   testnet: 'https://hasura-wallet.groupwar.xyz/v1/graphql',
@@ -179,11 +175,6 @@ export class Mizu {
   }
 
   /**
-   *
-   */
-  getOrderInfo() {}
-
-  /**
    * Create Order
    *
    * @param args.payload TransactionPayload
@@ -294,116 +285,6 @@ export class Mizu {
     });
 
     return result?.confirmOrder;
-  }
-
-  /**
-   * Create Transfer
-   *
-   * @param args.amount Transfer amount integer
-   * @param args.expirationAt expiration time
-   * @param args.symbol Transfer Token symbol
-   *
-   * @returns
-   */
-  async createTransfer(args: { amount: number; symbol: string }) {
-    this.checkInitialized();
-    this.checkJWTToken();
-
-    const result: any = await request({
-      url: this.graphqlEndPoint,
-      document: createTransferQuery,
-      variables: {
-        amount: Math.floor(args.amount),
-        expirationAt: Math.floor(Date.now() / 1000) + SEC_IN_24_HOURS,
-        symbol: args.symbol,
-        type: TRANSFER_TYPE.SINGLE,
-      },
-      requestHeaders: {
-        Authorization: `Bearer ${this.jwtToken}`,
-      },
-    });
-
-    return result?.createTransfer;
-  }
-
-  /**
-   * Create Transfer
-   *
-   * @param args.amount Transfer amount integer
-   * @param args.expirationAt expiration time
-   * @param args.symbol Transfer Token symbol
-   * @param args.count Transfer count
-   *
-   * @returns
-   */
-  async createMultipleTransfer(args: { amount: number; symbol: string; count: string | number }) {
-    this.checkInitialized();
-    this.checkJWTToken();
-
-    const result: any = await request({
-      url: this.graphqlEndPoint,
-      document: createMultipleTransferQuery,
-      variables: {
-        amount: Math.floor(args.amount),
-        count: Math.floor(Number(args.count)),
-        expirationAt: Math.floor(Date.now() / 1000) + SEC_IN_24_HOURS,
-        symbol: args.symbol,
-        type: TRANSFER_TYPE.MULTIPLE,
-      },
-      requestHeaders: {
-        Authorization: `Bearer ${this.jwtToken}`,
-      },
-    });
-
-    return result?.createTransfer;
-  }
-
-  /**
-   * fetch Transfer
-   *
-   * @param args.id Transfer ID
-   * @returns
-   */
-  async fetchTransfer(args: { id: string }) {
-    this.checkInitialized();
-    this.checkJWTToken();
-
-    const result: any = await request({
-      url: this.graphqlEndPoint,
-      document: fetchTransferQuery,
-      variables: {
-        id: args.id,
-      },
-      requestHeaders: {
-        'x-hasura-trans-id': args.id,
-      },
-    });
-
-    return result?.transferCreated;
-  }
-
-  /**
-   * Claim Transfer
-   *
-   * @param args.transferParam Transfer Param
-   * @returns
-   */
-  async claimTransfer(args: { transferParam: string }) {
-    this.checkInitialized();
-    this.checkJWTToken();
-
-    const result: any = await request({
-      url: this.graphqlEndPoint,
-      document: claimTransferQuery,
-      variables: {
-        transferParam: args.transferParam,
-      },
-      requestHeaders: {
-        Authorization: `Bearer ${this.jwtToken}`,
-      },
-    });
-
-    return result?.claimTransfer;
   }
 
   /**

@@ -44,75 +44,6 @@ export const createOrderQuery = gql`
 `;
 
 /**
- * For creating order
- */
-export const createTransferQuery = gql`
-  mutation transferQuery(
-    $amount: Float = 0
-    $expirationAt: Float = 0
-    $symbol: String = ""
-    $type: Int = 0
-  ) {
-    createTransfer(amount: $amount, expirationAt: $expirationAt, symbol: $symbol, type: $type)
-  }
-`;
-
-export const createMultipleTransferQuery = gql`
-  mutation transferQuery(
-    $amount: Float = 0
-    $expirationAt: Float = 0
-    $symbol: String = ""
-    $count: Int = 0
-    $type: Int = 0
-  ) {
-    createTransfer(
-      amount: $amount
-      expirationAt: $expirationAt
-      symbol: $symbol
-      count: $count
-      type: $type
-    )
-  }
-`;
-
-/**
- * For fetching transfer
- */
-export const fetchTransferQuery = gql`
-  query fetchTransferQuery($id: uuid = "") {
-    transferCreated(where: { id: { _eq: $id } }) {
-      id
-      walletUserId
-      isRefund
-      totalAmount
-      totalCount
-      expirationAt
-      createdAt
-      symbol
-      type
-      transfer_claimeds {
-        walletUserId
-        createdAt
-      }
-      transferClaimedsAggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
-`;
-
-/**
- * For claim transfer
- */
-export const claimTransferQuery = gql`
-  mutation claimTransferQuery($transferParam: String = "") {
-    claimTransfer(transferParam: $transferParam)
-  }
-`;
-
-/**
  * For simulate order
  */
 export const simulateOrderQuery = gql`
@@ -130,6 +61,9 @@ export const confirmOrderQuery = gql`
   }
 `;
 
+/**
+ * Fetch order list
+ */
 export const fetchOrderListQuery = gql`
   query fetchOrderListQuery(
     $walletUserId: uuid = ""
@@ -168,6 +102,9 @@ export const fetchOrderListQuery = gql`
   }
 `;
 
+/**
+ * Bind Google
+ */
 export const bindGoogleQuery = gql`
   mutation bindGoogleQuery($address: String = "", $idToken: String = "") {
     googleBind(address: $address, idToken: $idToken)
