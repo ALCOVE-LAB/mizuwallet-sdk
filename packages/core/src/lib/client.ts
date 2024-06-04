@@ -20,15 +20,12 @@ export const GRAPHQL_URL: Record<'mainnet' | 'testnet', string> = {
 
 export type JWTToken = string;
 
-const SEC_IN_72_HOURS = 3600 * 72;
-const SEC_IN_24_HOURS = 3600 * 24;
-
 interface PaginationSettings {
   limit?: number;
   offset?: number;
 }
 
-const KEYLESS_GOOGLE_SITE_URL = 'https://dev.fuzzwallet.com:7654/keyless_google';
+const KEYLESS_GOOGLE_SITE_URL = 'https://mizu.io/keyless_google';
 
 /**
  * MizuWallet SDK Core Client
