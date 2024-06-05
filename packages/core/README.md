@@ -27,22 +27,23 @@ Login In **Telegram** [[Docs of Telegram Mini App](https://core.telegram.org/bot
 
 ```ts
 // In Tg mini app
-await MizuClient.loginInTG({
-  data: window.Telegram.WebApp.initData,
-});
+await MizuClient.loginInTG(window.Telegram.WebApp.initData);
 
 // Login Widget
-await MizuClient.loginInTG({
-  data: JSON.stringify({
+await MizuClient.loginInTG(
+  JSON.stringify({
     id: 123,
     first_name: '',
     username: '',
-    photo_url:'https://t.me/i/userpic/320/abc.jpg',
+    photo_url: 'https://t.me/i/userpic/320/abc.jpg',
     auth_date: 123,
     hash: '123',
-  })
-  isWidget: true
-});
+  }),
+  // optional
+  {
+    isWidget: true,
+  },
+);
 ```
 
 Logout
