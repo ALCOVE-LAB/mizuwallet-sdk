@@ -26,7 +26,23 @@ const MizuClient = new Mizu({
 Login In **Telegram** [[Docs of Telegram Mini App](https://core.telegram.org/bots/webapps#designing-mini-apps)]
 
 ```ts
-await MizuClient.loginInTG(window.Telegram.WebApp.initData);
+// In Tg mini app
+await MizuClient.loginInTG({
+  data: window.Telegram.WebApp.initData,
+});
+
+// Login Widget
+await MizuClient.loginInTG({
+  data: JSON.stringify({
+    id: 123,
+    first_name: '',
+    username: '',
+    photo_url:'https://t.me/i/userpic/320/abc.jpg',
+    auth_date: 123,
+    hash: '123',
+  })
+  isWidget: true
+});
 ```
 
 Logout

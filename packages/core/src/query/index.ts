@@ -3,9 +3,15 @@ import { gql } from 'graphql-request';
 /**
  * For login
  */
-export const LoginMutation = gql`
-  mutation LoginMutation($appId: String = "", $initData: String = "") {
+export const TGLoginMutation = gql`
+  mutation TGLoginMutation($appId: String = "", $initData: String = "") {
     tgLogin(appId: $appId, initData: $initData)
+  }
+`;
+
+export const TGWidgetLoginMutation = gql`
+  mutation tgWidgetLoginMutation($appId: String = "", $authData: String = "") {
+    tgWidgetLogin(appId: $appId, authData: $authData)
   }
 `;
 

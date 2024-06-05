@@ -3,7 +3,8 @@ import request from 'graphql-request';
 import { decodeJWT } from '../helpers/JWTHelper';
 import {
   CheckUserIsExistQueryByTgId,
-  LoginMutation,
+  TGLoginMutation,
+  TGWidgetLoginMutation,
   UserWalletAddressQuery,
   bindGoogleQuery,
   confirmOrderQuery,
@@ -95,22 +96,39 @@ export class Mizu {
   /**
    * Login in TG
    *
-   * @param initData - initial data of TG
+   * @param data - initial data of TG, or stringified widget user object
+   * @param opt.isWidget - is from login widget
    */
-  async loginInTG(initData: string) {
+  async loginInTG(data: string, opt?: { isWidget?: boolean }) {
     this.checkInitialized();
 
-    const result: any = await request({
-      url: this.graphqlEndPoint,
-      document: LoginMutation,
-      variables: {
-        appId: this.appId,
-        initData,
-      },
-    });
+    // if isWidget, then use TGWidgetLoginMutation
+    let tokenStr = '';
+    if (opt?.isWidget) {
+      const result: any = await request({
+        url: this.graphqlEndPoint,
+        document: TGWidgetLoginMutation,
+        variables: {
+          appId: this.appId,
+          authData: window.btoa(data),
+        },
+      });
+
+      tokenStr = result.tgWidgetLogin;
+    } else {
+      const result: any = await request({
+        url: this.graphqlEndPoint,
+        document: TGLoginMutation,
+        variables: {
+          appId: this.appId,
+          initData: data,
+        },
+      });
+      tokenStr = result.tgLogin;
+    }
 
     try {
-      const [userId, jwt]: any = decodeJWT(result.tgLogin);
+      const [userId, jwt]: any = decodeJWT(tokenStr);
       this.userId = userId;
       this.jwtToken = jwt;
     } catch {
