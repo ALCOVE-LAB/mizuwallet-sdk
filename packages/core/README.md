@@ -39,7 +39,6 @@ await MizuClient.loginInTG(
     auth_date: 123,
     hash: '123',
   }),
-  // optional
   {
     isWidget: true,
   },
