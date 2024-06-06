@@ -10,6 +10,7 @@ import {
   confirmOrderQuery,
   createOrderQuery,
   fetchOrderListQuery,
+  fetchOrderQuery,
   simulateOrderQuery,
 } from '../query';
 import { ORDER_STATUS } from './config/enum';
@@ -190,31 +191,6 @@ export class Mizu {
   }
 
   /**
-   * Create Order
-   *
-   * @param args.payload TransactionPayload
-   * @returns
-   */
-  async createOrder(args: { payload: any }) {
-    this.checkInitialized();
-    this.checkJWTToken();
-
-    const result: any = await request({
-      url: this.graphqlEndPoint,
-      document: createOrderQuery,
-      variables: {
-        appId: this.appId,
-        payload: window.btoa(JSON.stringify(args.payload)),
-      },
-      requestHeaders: {
-        Authorization: `Bearer ${this.jwtToken}`,
-      },
-    });
-
-    return result?.createOrder;
-  }
-
-  /**
    *
    * @param args.redirect_uri
    */
@@ -279,6 +255,31 @@ export class Mizu {
   }
 
   /**
+   * Create Order
+   *
+   * @param args.payload TransactionPayload
+   * @returns
+   */
+  async createOrder(args: { payload: any }) {
+    this.checkInitialized();
+    this.checkJWTToken();
+
+    const result: any = await request({
+      url: this.graphqlEndPoint,
+      document: createOrderQuery,
+      variables: {
+        appId: this.appId,
+        payload: window.btoa(JSON.stringify(args.payload)),
+      },
+      requestHeaders: {
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
+    });
+
+    return result?.createOrder;
+  }
+
+  /**
    * User interactive
    *
    *
@@ -300,6 +301,56 @@ export class Mizu {
     });
 
     return result?.confirmOrder;
+  }
+
+  /**
+   * Fetch Order By ID
+   *
+   * @param args.id order.id
+   * @returns
+   */
+  async fetchOrder(args: { id: string }) {
+    this.checkInitialized();
+    this.checkJWTToken();
+
+    const result: any = await request({
+      url: this.graphqlEndPoint,
+      document: fetchOrderQuery,
+      variables: {
+        id: args.id,
+      },
+      requestHeaders: {
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
+    });
+
+    if (!result.orderByPk) throw new Error('Order not found');
+
+    return {
+      ...result.orderByPk,
+      payload: JSON.parse(window.atob(result.orderByPk.payload)),
+    };
+  }
+
+  /**
+   * Wait for order
+   *
+   * @param args.id order.id
+   * @returns
+   */
+  async waitForOrder(args: { id: string }) {
+    let order = await this.fetchOrder(args);
+    let MAX_RETRY = 20;
+
+    while (
+      MAX_RETRY-- > 0 &&
+      ![ORDER_STATUS.SUCCESS, ORDER_STATUS.FAIL, ORDER_STATUS.CANCELED].includes(order.status)
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      order = await this.fetchOrder(args);
+    }
+
+    return order;
   }
 
   /**

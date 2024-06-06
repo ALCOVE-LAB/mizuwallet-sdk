@@ -68,6 +68,28 @@ export const confirmOrderQuery = gql`
 `;
 
 /**
+ * Get Order By ID
+ */
+export const fetchOrderQuery = gql`
+  query fetchOrderQuery($id: uuid = "") {
+    orderByPk(id: $id) {
+      id
+      createdAt
+      payload
+      status
+      type
+      updatedAt
+      walletUserId
+      applicationId
+      transactions {
+        hash
+        type
+      }
+    }
+  }
+`;
+
+/**
  * Fetch order list
  */
 export const fetchOrderListQuery = gql`

@@ -85,7 +85,23 @@ await MizuClient.confirmOrder({
 });
 ```
 
-3. Check is user existed.
+3. **since(1.1.3)** Fetch Order Info
+
+```ts
+await MizuClient.fetchOrder({
+  orderId: '1234-abcd-12312412',
+});
+```
+
+4. **since(1.1.3)** Wait for Order to settled (Status to be: SUCCESS/FAIL/CANCELED)
+
+```ts
+await MizuClient.waitForOrder({
+  orderId: '1234-abcd-12312412',
+});
+```
+
+5. Check is user existed.
 
 ```ts
 await MizuClient.isUserExistByTgID('123123');
