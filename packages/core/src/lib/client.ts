@@ -4,7 +4,9 @@ import { decodeJWT } from '../helpers/JWTHelper';
 import {
   CheckUserIsExistQueryByTgId,
   TGLoginMutation,
+  TGLoginWithShortIDMutation,
   TGWidgetLoginMutation,
+  TGWidgetLoginWithShortIDMutation,
   UserWalletAddressQuery,
   bindGoogleQuery,
   confirmOrderQuery,
@@ -100,7 +102,7 @@ export class Mizu {
    * @param data - initial data of TG, or stringified widget user object
    * @param opt.isWidget - is from login widget
    */
-  async loginInTG(data: string, opt?: { isWidget?: boolean }) {
+  async loginInTG(data: string, opt?: { isWidget?: boolean; shortID?: string }) {
     this.checkInitialized();
 
     // if isWidget, then use TGWidgetLoginMutation
@@ -108,10 +110,11 @@ export class Mizu {
     if (opt?.isWidget) {
       const result: any = await request({
         url: this.graphqlEndPoint,
-        document: TGWidgetLoginMutation,
+        document: opt?.shortID ? TGWidgetLoginWithShortIDMutation : TGWidgetLoginMutation,
         variables: {
           appId: this.appId,
           authData: window.btoa(data),
+          ...(opt?.shortID ? { shortId: opt.shortID } : {}),
         },
       });
 
@@ -119,10 +122,11 @@ export class Mizu {
     } else {
       const result: any = await request({
         url: this.graphqlEndPoint,
-        document: TGLoginMutation,
+        document: opt?.shortID ? TGLoginWithShortIDMutation : TGLoginMutation,
         variables: {
           appId: this.appId,
           initData: data,
+          ...(opt?.shortID ? { shortId: opt.shortID } : {}),
         },
       });
       tokenStr = result.tgLogin;

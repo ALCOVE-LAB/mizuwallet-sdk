@@ -9,9 +9,25 @@ export const TGLoginMutation = gql`
   }
 `;
 
+export const TGLoginWithShortIDMutation = gql`
+  mutation TGLoginMutation($appId: String = "", $initData: String = "", $shortId: String = "") {
+    tgLogin(appId: $appId, initData: $initData, shortId: $shortId)
+  }
+`;
+
 export const TGWidgetLoginMutation = gql`
   mutation tgWidgetLoginMutation($appId: String = "", $authData: String = "") {
     tgWidgetLogin(appId: $appId, authData: $authData)
+  }
+`;
+
+export const TGWidgetLoginWithShortIDMutation = gql`
+  mutation tgWidgetLoginMutation(
+    $appId: String = ""
+    $authData: String = ""
+    $shortId: String = ""
+  ) {
+    tgWidgetLogin(appId: $appId, authData: $authData, shortId: $shortId)
   }
 `;
 
